@@ -17,7 +17,7 @@ import multer from 'multer';
 import url from 'url';
 const csvWriter = require('fast-csv');
 const cors = require('cors');
-//import * as gate from './backend_lib/Get_Gateway.js';
+import * as gate from './backend_lib/Get_Gateway.js';
 
 // initial setting
 const storage = multer.diskStorage({
@@ -25,7 +25,7 @@ const storage = multer.diskStorage({
         cb(null, 'uploads/');
     },
     filename: function (req, file, cb) {
-        cb(null, file.originalname); // make security problem?
+        cb(null, file.originalname);
     }
 })
 const app = express();
@@ -59,10 +59,10 @@ app.use(session({
 // the middleware allows to start server using port 3000
 app.listen(port, async () => {
     node = await addition.MakeNode();
-    //gateway = await gate.GetGateway();
-    //network = await gateway.getNetwork(channelName)
-    //contract = network.getContract(chaincodeName)
-    //await contract.submitTransaction("Initialize", "dataNFT");
+    gateway = await gate.GetGateway();
+    network = await gateway.getNetwork(channelName)
+    contract = network.getContract(chaincodeName)
+    await contract.submitTransaction("Initialize", "dataNFT");
     console.log('Listening Client Application')
 });
 
@@ -195,13 +195,11 @@ app.post('/mintNFT/upload', upload.single('file'), async (req, res) => {
                 console.log(`column: ${column}, columncount: ${columnCount} row: ${rowCount}, null: ${nullCount}`);
                 const null_ratio = nullCount / (columnCount * rowCount)
                 fs.unlinkSync(file.path); // delete the file stored in server
-                //const result = await func.MintNFT(contract, mint_num.toString(), uri, username, column, rowCount, null_ratio);
-                //const tmp = JSON.parse(result.toString('utf8'));
+                const result = await func.MintNFT(contract, mint_num.toString(), uri, username, column, rowCount, null_ratio);
+                const tmp = JSON.parse(result.toString('utf8'));
                 send_data.ismintsuccess = true;
                 send_data.msg = "mint success";
-                send_data.nft = {tokenId: mint_num, metaData: {columns: column, dataSize: rowCount, nullRatio: null_ratio}, tokenURI: uri, userID: "yeon"};
-                mint_num++
-                //send_data.nft = tmp;
+                send_data.nft = tmp;
                 res.send(send_data);
             })
         }    
@@ -224,9 +222,8 @@ app.get('/myNFT', async (req, res) => {
     console.log("show my NFT");
 
     // get the data
-    //const result = await func.ShowMyNFT(contract, username); // maybe array
-    //send_data.nfts = result;
-    send_data.nfts = [{tokenId: 0, userID: "sang", metaData:{columns: ['id', 'grade', 'age', 'class'], dataSize: 4 ,nullRatio: 0.625}, tokenURI: "QmZiAYfaNYQSFU85rA5Q2Ht75dpSKBiN3GFUorV1LtgV7L"}, {tokenId: 1, userID: "sang", metaData: {columns: ['id', 'grade', 'age', 'class'], dataSize: 5, nullRatio:0.6}, tokenURI: "QmWKkWSVzwc7CJhCH4XF5HTfdhKZd4am4SAwhRvft2DwWH"} , {tokenId: 1, userID: "sang", metaData: {columns: ['id', 'grade', 'age', 'class'], dataSize: 5, nullRatio:0.6}, tokenURI: "QmWKkWSVzwc7CJhCH4XF5HTfdhKZd4am4SAwhRvft2DwWH"} , {tokenId: 1, userID: "sang", metaData: {columns: ['id', 'grade', 'age', 'class'], dataSize: 5, nullRatio:0.6}, tokenURI: "QmWKkWSVzwc7CJhCH4XF5HTfdhKZd4am4SAwhRvft2DwWH"}, {tokenId: 1, userID: "sang", metaData: {columns: ['id', 'grade', 'age', 'class'], dataSize: 5, nullRatio:0.6}, tokenURI: "QmWKkWSVzwc7CJhCH4XF5HTfdhKZd4am4SAwhRvft2DwWH"}, {tokenId: 1, userID: "sang", metaData: {columns: ['id', 'grade', 'age', 'class'], dataSize: 5, nullRatio:0.6}, tokenURI: "QmWKkWSVzwc7CJhCH4XF5HTfdhKZd4am4SAwhRvft2DwWH"}, {tokenId: 1, userID: "sang", metaData: {columns: ['id', 'grade', 'age', 'class'], dataSize: 5, nullRatio:0.6}, tokenURI: "QmWKkWSVzwc7CJhCH4XF5HTfdhKZd4am4SAwhRvft2DwWH"}, {tokenId: 1, userID: "sang", metaData: {columns: ['id', 'grade', 'age', 'class'], dataSize: 5, nullRatio:0.6}, tokenURI: "QmWKkWSVzwc7CJhCH4XF5HTfdhKZd4am4SAwhRvft2DwWH"}, {tokenId: 1, userID: "sang", metaData: {columns: ['id', 'grade', 'age', 'class'], dataSize: 5, nullRatio:0.6}, tokenURI: "QmWKkWSVzwc7CJhCH4XF5HTfdhKZd4am4SAwhRvft2DwWH"}, {tokenId: 1, userID: "sang", metaData: {columns: ['id', 'grade', 'age', 'class'], dataSize: 5, nullRatio:0.6}, tokenURI: "QmWKkWSVzwc7CJhCH4XF5HTfdhKZd4am4SAwhRvft2DwWH"}, {tokenId: 1, userID: "sang", metaData: {columns: ['id', 'grade', 'age', 'class'], dataSize: 5, nullRatio:0.6}, tokenURI: "QmWKkWSVzwc7CJhCH4XF5HTfdhKZd4am4SAwhRvft2DwWH"}, {tokenId: 1, userID: "sang", metaData: {columns: ['id', 'grade', 'age', 'class'], dataSize: 5, nullRatio:0.6}, tokenURI: "QmWKkWSVzwc7CJhCH4XF5HTfdhKZd4am4SAwhRvft2DwWH"}, {tokenId: 1, userID: "sang", metaData: {columns: ['id', 'grade', 'age', 'class'], dataSize: 5, nullRatio:0.6}, tokenURI: "QmWKkWSVzwc7CJhCH4XF5HTfdhKZd4am4SAwhRvft2DwWH"}, {tokenId: 1, userID: "sang", metaData: {columns: ['id', 'grade', 'age', 'class'], dataSize: 5, nullRatio:0.6}, tokenURI: "QmWKkWSVzwc7CJhCH4XF5HTfdhKZd4am4SAwhRvft2DwWH"}];
+    const result = await func.ShowMyNFT(contract, username);
+    send_data.nfts = result;
     res.send(send_data);
 });
 
@@ -237,17 +234,15 @@ app.get('/searchNFT', async(req, res) => {
     console.log("searchNFT Process")
 
     // get the data
-    //const result = await func.ShowAllNFT(contract); // maybe array
-    //send_data.nfts = result;
-    send_data.nfts = [{tokenId: 0, userID: "sang", metaData:{columns: ['id', 'grade', 'age', 'class'], dataSize: 4 ,nullRatio: 0.625}, tokenURI: "QmZiAYfaNYQSFU85rA5Q2Ht75dpSKBiN3GFUorV1LtgV7L"}, {tokenId: 1, userID: "sang", metaData: {columns: ['id', 'grade', 'age', 'class'], dataSize: 5, nullRatio:0.6}, tokenURI: "QmWKkWSVzwc7CJhCH4XF5HTfdhKZd4am4SAwhRvft2DwWH"}];
-    //send_data.nfts = [{tokenId: 5, metaData:{columns: ['kim', 'han'], dataSize: 10 ,nullRatio: 0.1}, tokenURI: "ads"}, {tokenId: 10, metaData: {columns: ['song', 'lee'], dataSize: 8, nullRatio:0.25}, tokenURI: "knk"},  {tokenId: 15, metaData: {columns: ['song', 'lee'], dataSize: 8, nullRatio:0.79}, tokenURI: "knk"},  {tokenId: 16, metaData: {columns: ['song', 'lee'], dataSize: 8, nullRatio:0.11}, tokenURI: "knk"},  {tokenId: 17, metaData: {columns: ['song', 'lee'], dataSize: 8, nullRatio:0.23}, tokenURI: "knk"},  {tokenId: 18, metaData: {columns: ['song', 'lee'], dataSize: 8, nullRatio:0.37}, tokenURI: "knk"},  {tokenId: 19, metaData: {columns: ['song', 'lee'], dataSize: 8, nullRatio:0.36}, tokenURI: "knk"},  {tokenId: 20, metaData: {columns: ['song', 'lee'], dataSize: 8, nullRatio:0.31}, tokenURI: "knk"},  {tokenId: 21, metaData: {columns: ['song', 'lee'], dataSize: 8, nullRatio:0.27}, tokenURI: "knk"},  {tokenId: 22, metaData: {columns: ['song', 'lee'], dataSize: 8, nullRatio:0.5}, tokenURI: "knk"},  {tokenId: 23, metaData: {columns: ['song', 'lee'], dataSize: 8, nullRatio:0.4}, tokenURI: "knk"},  {tokenId: 24, metaData: {columns: ['song', 'lee'], dataSize: 8, nullRatio:0.3}, tokenURI: "knk"}];
+    const result = await func.ShowAllNFT(contract); 
+    send_data.nfts = result;
     res.send(send_data);
 });
 
 // send the selected files
 app.post('/searchNFT/search', async(req, res) => {
     const selected_tokenId = req.body.tokenId;
-    const selected_tokenURI = req.body.tokenURI; // maybe array
+    const selected_tokenURI = req.body.tokenURI; 
     console.log("send selected searchNFT Process")
     let send_data = {file: ""};
 
@@ -262,9 +257,8 @@ app.get('/integrateNFT', async (req, res) => {
     const username = req.session.nickname;
     console.log("Show All of NFT to integrate NFT")
 
-    //const result = await func.ShowAllNFT(contract); // maybe array
-    //send_data.nfts = result;
-    send_data.nfts = [{tokenId: 0, userID: "sang", metaData:{columns: ['id', 'grade', 'age', 'class'], dataSize: 4 ,nullRatio: 0.625}, tokenURI: "QmZiAYfaNYQSFU85rA5Q2Ht75dpSKBiN3GFUorV1LtgV7L"}, {tokenId: 1, userID: "sang", metaData: {columns: ['id', 'grade', 'age', 'class'], dataSize: 5, nullRatio:0.6}, tokenURI: "QmWKkWSVzwc7CJhCH4XF5HTfdhKZd4am4SAwhRvft2DwWH"}, {tokenId: 2, userID: "sang", metaData: {columns: ['id', 'grade', 'age', 'class'], dataSize: 5, nullRatio:0.6}, tokenURI: "QmWKkWSVzwc7CJhCH4XF5HTfdhKZd4am4SAwhRvft2DwWH"}, {tokenId: 3, userID: "sang", metaData: {columns: ['id', 'grade', 'age', 'class'], dataSize: 5, nullRatio:0.6}, tokenURI: "QmWKkWSVzwc7CJhCH4XF5HTfdhKZd4am4SAwhRvft2DwWH"}, {tokenId: 4, userID: "sang", metaData: {columns: ['id', 'grade', 'age', 'class'], dataSize: 5, nullRatio:0.6}, tokenURI: "QmWKkWSVzwc7CJhCH4XF5HTfdhKZd4am4SAwhRvft2DwWH"}, {tokenId: 5, userID: "sang", metaData: {columns: ['id', 'grade', 'age', 'class'], dataSize: 5, nullRatio:0.6}, tokenURI: "QmWKkWSVzwc7CJhCH4XF5HTfdhKZd4am4SAwhRvft2DwWH"}, {tokenId: 6, userID: "sang", metaData: {columns: ['id', 'grade', 'age', 'class'], dataSize: 5, nullRatio:0.6}, tokenURI: "QmWKkWSVzwc7CJhCH4XF5HTfdhKZd4am4SAwhRvft2DwWH"}, {tokenId: 7, userID: "sang", metaData: {columns: ['id', 'grade', 'age', 'class'], dataSize: 5, nullRatio:0.6}, tokenURI: "QmWKkWSVzwc7CJhCH4XF5HTfdhKZd4am4SAwhRvft2DwWH"}, {tokenId: 8, userID: "sang", metaData: {columns: ['id', 'grade', 'age', 'class'], dataSize: 5, nullRatio:0.6}, tokenURI: "QmWKkWSVzwc7CJhCH4XF5HTfdhKZd4am4SAwhRvft2DwWH"}, {tokenId: 9, userID: "sang", metaData: {columns: ['id', 'grade', 'age', 'class'], dataSize: 5, nullRatio:0.6}, tokenURI: "QmWKkWSVzwc7CJhCH4XF5HTfdhKZd4am4SAwhRvft2DwWH"}, {tokenId: 10, userID: "sang", metaData: {columns: ['id', 'grade', 'age', 'class'], dataSize: 5, nullRatio:0.6}, tokenURI: "QmWKkWSVzwc7CJhCH4XF5HTfdhKZd4am4SAwhRvft2DwWH"}, {tokenId: 11, userID: "sang", metaData: {columns: ['id', 'grade', 'age', 'class'], dataSize: 5, nullRatio:0.6}, tokenURI: "QmWKkWSVzwc7CJhCH4XF5HTfdhKZd4am4SAwhRvft2DwWH"}, {tokenId: 12, userID: "sang", metaData: {columns: ['id', 'grade', 'age', 'class'], dataSize: 5, nullRatio:0.6}, tokenURI: "QmWKkWSVzwc7CJhCH4XF5HTfdhKZd4am4SAwhRvft2DwWH"}];
+    const result = await func.ShowAllNFT(contract);
+    send_data.nfts = result;
     res.send(send_data);
 })
 
@@ -277,7 +271,7 @@ app.post('/integrateNFT/mint', async (req, res) => {
     let integrate_count = mint_num++;
     console.log("Integrate Process");
 
-    //let selected_uri = await func.GetTokenURI(contract, selected_tokenId);
+    let selected_uri = await func.GetTokenURI(contract, selected_tokenId);
 
     // get the file to integrate from ipfs
     let files = await addition.GetFilesFromIPFS(node, selected_tokenURI);
@@ -347,11 +341,10 @@ app.post('/integrateNFT/mint', async (req, res) => {
                 fs.unlinkSync(concat_filepath); // delete the file stored in server
                 fs.rmdirSync(`Integrate${integrate_count}`);
                 const null_ratio = nullCount / (columnCount * rowCount);
-                //const result = await func.MintIntegratedNFT(contract, string(integrate_count), uri, username, column, rowCount, null_ratio);
+                const result = await func.MintIntegratedNFT(contract, string(integrate_count), uri, username, column, rowCount, null_ratio);
                 send_data.isSuccess = true;
-                //const tmp = JSON.parse(result.toString('utf8'));
-                //send_data.nft = tmp;
-                send_data.nft = {tokenId: 13, metaData: {columns: column, dataSize: 59, nullRatio: null_ratio}, tokenURI: uri};
+                const tmp = JSON.parse(result.toString('utf8'));
+                send_data.nft = tmp;
                 res.send(send_data);
             })
         })
@@ -365,7 +358,7 @@ app.post('/integrateNFT/mint', async (req, res) => {
 
 // program exits
 process.on('SIGINT', async() => {
-    //await gateway.disconnect();
+    await gateway.disconnect();
     await node.stop();
     console.log("program exits");
     process.exit(0);
